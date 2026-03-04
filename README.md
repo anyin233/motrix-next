@@ -10,7 +10,7 @@
 ---
 
 <div align="center">
-  <img src="docs/media/screenshot-downloading.png" alt="Motrix Next — Downloading" width="720" />
+  <img src="docs/media/screenshot-downloading.png" alt="Motrix Next Downloading Interface" width="720" />
 </div>
 
 ## Why Motrix Next?
@@ -19,7 +19,17 @@
 
 However, the original project has been largely inactive since 2023. The Electron + Vue 2 + Vuex + Element UI stack accumulated technical debt, making it increasingly difficult to maintain, extend, or package for modern platforms.
 
-**Motrix Next is not a fork — it is a complete rewrite.** Every component has been rebuilt from scratch with a modern architecture:
+### What we kept
+
+We are deeply grateful to the original Motrix community. The following were too valuable to discard and have been carefully carried forward:
+
+- **Internationalization** — 25+ community-contributed language packs (Chinese, Japanese, Korean, Arabic, French, German, and many more), all preserved and integrated with Vue I18n
+- **Aria2 RPC integration** — the battle-tested aria2 download engine and its JSON-RPC protocol remain at the core, handling HTTP, FTP, BitTorrent, and Magnet links
+- **UX philosophy** — Motrix's principle of keeping the interface clean, simple, and distraction-free is carried forward in every design decision
+
+### What we rebuilt
+
+**Motrix Next is not a fork — it is a complete rewrite.** Every other layer of the application has been redesigned and reimplemented from scratch:
 
 | Layer | Motrix (Legacy) | Motrix Next |
 |-------|----------------|-------------|
@@ -32,8 +42,6 @@ However, the original project has been largely inactive since 2023. The Electron
 | **Build System** | electron-builder | **Vite + Cargo** |
 | **Bundle Size** | ~180 MB | **~15 MB** |
 | **Auto-Update** | electron-updater | **Tauri updater plugin** |
-
-What was preserved: the community-contributed **i18n translations** (25+ languages), the **aria2 RPC protocol** integration, and the core UX philosophy of keeping things simple and fast. Everything else — the runtime, the UI, the state management, the build pipeline, the update system — was redesigned and rewritten.
 
 Version numbering starts at `1.0.0` to reflect this clean break.
 
