@@ -39,10 +39,7 @@ function openUrl(url: string) {
       <div class="about-container">
         <div class="about-header">
           <div class="about-logo">
-            <svg xmlns="http://www.w3.org/2000/svg" width="90" height="32" viewBox="0 0 100 36">
-              <rect x="1" y="1" width="98" height="34" rx="8" fill="none" stroke="#E0A422" stroke-width="2.5"/>
-              <text x="50" y="26" fill="#E0A422" font-family="Arial, Helvetica, sans-serif" font-weight="900" font-size="22" text-anchor="middle" letter-spacing="3">NEXT</text>
-            </svg>
+            <img src="@/assets/logo.png" alt="Motrix Next" width="100" height="100" style="border-radius: 20px;" />
           </div>
           <div class="about-title">Motrix Next</div>
           <div class="about-version">v{{ version }}</div>
@@ -102,7 +99,7 @@ function openUrl(url: string) {
 
 <style scoped>
 .about-container {
-  padding: 28px 28px 20px;
+  padding: 16px 28px 20px;
   text-align: center;
 }
 .about-header {
