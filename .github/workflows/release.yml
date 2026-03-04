@@ -91,7 +91,7 @@ jobs:
 
           read_sig() { [ -f "$1" ] && cat "$1" || echo ""; }
 
-          DARWIN_SIG=$(read_sig "sigs/motrix-next.app.tar.gz.sig")
+          DARWIN_SIG=$(read_sig "sigs/motrix-next_aarch64.app.tar.gz.sig")
           WINDOWS_SIG=$(read_sig "sigs/motrix-next_${VERSION}_x64-setup.exe.sig")
           LINUX_X64_SIG=$(read_sig "sigs/motrix-next_${VERSION}_amd64.AppImage.sig")
           LINUX_ARM_SIG=$(read_sig "sigs/motrix-next_${VERSION}_aarch64.AppImage.sig")
@@ -100,7 +100,7 @@ jobs:
             --arg version "$VERSION" \
             --arg pub_date "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
             --arg darwin_sig "$DARWIN_SIG" \
-            --arg darwin_url "$BASE/motrix-next.app.tar.gz" \
+            --arg darwin_url "$BASE/motrix-next_aarch64.app.tar.gz" \
             --arg win_sig "$WINDOWS_SIG" \
             --arg win_url "$BASE/motrix-next_${VERSION}_x64-setup.exe" \
             --arg lx64_sig "$LINUX_X64_SIG" \
