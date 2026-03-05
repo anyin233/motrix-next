@@ -198,22 +198,19 @@ watch(() => props.task.status, checkFileExists)
 .task-name {
   color: var(--task-item-text);
   margin-bottom: 1.5rem;
-  margin-right: 200px;
-  word-break: break-all;
+  margin-right: 250px;
+  overflow: hidden;
   min-height: 26px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 4px;
 }
 .task-name > span {
   font-size: 14px;
   line-height: 26px;
-  overflow: hidden;
-  text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-all;
 }
 .file-missing-tag {
   display: inline-flex;

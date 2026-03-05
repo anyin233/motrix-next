@@ -120,7 +120,7 @@ function handleDeleteTask(task: Record<string, unknown>) {
   }
   const deleteFiles = ref(false)
   const name = getTaskName(task as never, { defaultName: 'Unknown', maxLen: 50 })
-  dialog.warning({
+  const d = dialog.warning({
     title: t('task.delete-task'),
     content: () => h('div', {}, [
       h('p', { style: 'margin: 0 0 12px; word-break: break-all;' }, name),
@@ -132,6 +132,10 @@ function handleDeleteTask(task: Record<string, unknown>) {
     positiveText: t('app.yes'),
     negativeText: t('app.no'),
     onPositiveClick: async () => {
+      d.loading = true
+      d.negativeButtonProps = { disabled: true } as never
+      d.closable = false
+      d.maskClosable = false
       try {
         await taskStore.removeTask(task as never)
         if (deleteFiles.value) {

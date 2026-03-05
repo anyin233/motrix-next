@@ -43,7 +43,7 @@ function onDeleteAll() {
   if (allGids.value.length === 0) return
   const gids = [...allGids.value]
   const deleteFiles = ref(false)
-  dialog.warning({
+  const d = dialog.warning({
     title: t('task.delete-task'),
     content: () => h('div', {}, [
       h('p', { style: 'margin: 0 0 12px;' }, `${t('task.batch-delete-task-confirm').replace('{{count}}', String(gids.length))}`),
@@ -55,6 +55,10 @@ function onDeleteAll() {
     positiveText: t('app.yes'),
     negativeText: t('app.no'),
     onPositiveClick: async () => {
+      d.loading = true
+      d.negativeButtonProps = { disabled: true } as never
+      d.closable = false
+      d.maskClosable = false
       if (deleteFiles.value) {
         const tasks = taskStore.taskList.filter(t => gids.includes(t.gid))
         for (const task of tasks) {
