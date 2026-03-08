@@ -61,9 +61,14 @@ async function autoCheckForUpdate() {
   try {
     const { invoke } = await import('@tauri-apps/api/core')
     const channel = config.updateChannel || 'stable'
+    const proxy = config.proxy
+    const proxyServer =
+      proxy?.enable && proxy.server && ((proxy.scope as unknown as string[]) || []).includes('update-app')
+        ? proxy.server
+        : null
     const update = await invoke<{ version: string; body: string | null; date: string | null } | null>(
       'check_for_update',
-      { channel },
+      { channel, proxy: proxyServer },
     )
     preferenceStore.updateAndSave({ lastCheckUpdateTime: Date.now() })
     if (update) {
@@ -203,6 +208,10 @@ preferenceStore.loadPreference().then(async () => {
 
   autoCheckForUpdate()
   autoSyncTrackerOnStartup()
+
+  // Re-check tracker sync hourly for long-running sessions.
+  // autoSyncTrackerOnStartup() internally de-duplicates via lastSyncTrackerTime.
+  setInterval(autoSyncTrackerOnStartup, 3_600_000)
 
   let lastClipboardText = ''
   getCurrentWindow().onFocusChanged(async ({ payload: focused }) => {

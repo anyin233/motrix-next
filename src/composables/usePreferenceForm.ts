@@ -33,7 +33,7 @@ export interface UsePreferenceFormOptions<T extends Record<string, unknown>> {
    * Optional post-save hook for side-effects that depend on the saved values
    * (e.g. showing a "restart required" dialog when the locale changes).
    */
-  afterSave?: (form: T) => void
+  afterSave?: (form: T, prevConfig: Partial<AppConfig>) => void
 
   /**
    * Optional transform applied to the form data before passing it to
@@ -74,6 +74,10 @@ export function usePreferenceForm<T extends Record<string, unknown>>(options: Us
       return
     }
 
+    // Snapshot previous config BEFORE mutating the store,
+    // so afterSave hooks can compare old vs new values.
+    const prevConfig = { ...preferenceStore.config }
+
     savedSnapshot.value = JSON.parse(JSON.stringify(form.value)) as T
 
     const storeData: Partial<AppConfig> = options.transformForStore
@@ -89,7 +93,7 @@ export function usePreferenceForm<T extends Record<string, unknown>>(options: Us
 
     message.success(t('preferences.save-success-message'))
 
-    options.afterSave?.(form.value as T)
+    options.afterSave?.(form.value as T, prevConfig)
   }
 
   function handleReset(): void {

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 /** @fileoverview Application update notification dialog with channel support. */
 import { marked } from 'marked'
+import DOMPurify from 'dompurify'
 import { ref, computed, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { NModal, NButton, NSpace, NProgress, NIcon, NText, NSpin, NTag } from 'naive-ui'
@@ -40,7 +41,8 @@ const currentVersion = ref('')
 const releaseNotes = ref('')
 const renderedNotes = computed(() => {
   if (!releaseNotes.value) return ''
-  return marked.parse(releaseNotes.value, { async: false }) as string
+  const raw = marked.parse(releaseNotes.value, { async: false }) as string
+  return DOMPurify.sanitize(raw)
 })
 const errorMsg = ref('')
 const downloadTotal = ref(0)
@@ -53,6 +55,14 @@ const progressPercent = computed(() => {
   if (downloadTotal.value <= 0) return 0
   return Math.round((downloadReceived.value / downloadTotal.value) * 100)
 })
+/** Returns the proxy server URL if proxy is enabled for app updates. */
+function getUpdateProxy(): string | null {
+  const proxy = preferenceStore.config.proxy
+  if (!proxy?.enable || !proxy.server) return null
+  const scope = (proxy.scope || []) as string[]
+  if (!scope.includes('update-app')) return null
+  return proxy.server
+}
 
 const downloadedMB = computed(() => (downloadReceived.value / 1048576).toFixed(1))
 const totalMB = computed(() => (downloadTotal.value / 1048576).toFixed(1))
@@ -73,6 +83,7 @@ async function open(channel?: string) {
   try {
     const update = await invoke<UpdateMetadata | null>('check_for_update', {
       channel: ch,
+      proxy: getUpdateProxy(),
     })
     preferenceStore.updateAndSave({ lastCheckUpdateTime: Date.now() })
     if (update) {
@@ -109,7 +120,7 @@ async function startDownload() {
   })
 
   try {
-    await invoke('install_update', { channel: ch })
+    await invoke('install_update', { channel: ch, proxy: getUpdateProxy() })
     if (!downloadCancelled.value) {
       phase.value = 'ready'
     }

@@ -127,8 +127,9 @@ const { form, isDirty, handleSave, handleReset, resetSnapshot } = usePreferenceF
     delete (data as Record<string, unknown>).btAutoDownloadContent
     return data
   },
-  afterSave: (f) => {
-    const prevLocale = preferenceStore.locale || 'en-US'
+  afterSave: async (f, prevConfig) => {
+    // Locale change → restart prompt
+    const prevLocale = prevConfig.locale || 'en-US'
     if (f.locale !== prevLocale) {
       dialog.info({
         title: 'Language Changed',
@@ -139,6 +140,18 @@ const { form, isDirty, handleSave, handleReset, resetSnapshot } = usePreferenceF
           relaunch()
         },
       })
+    }
+
+    // Sync autostart state immediately on save
+    if (f.openAtLogin !== !!prevConfig.openAtLogin) {
+      try {
+        const { isEnabled, enable, disable } = await import('@tauri-apps/plugin-autostart')
+        const currentlyEnabled = await isEnabled()
+        if (f.openAtLogin && !currentlyEnabled) await enable()
+        else if (!f.openAtLogin && currentlyEnabled) await disable()
+      } catch (e) {
+        console.error('Failed to sync autostart:', e)
+      }
     }
   },
 })

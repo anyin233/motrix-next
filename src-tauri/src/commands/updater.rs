@@ -66,6 +66,14 @@ impl UpdateCancelState {
     }
 }
 
+/// Applies or clears the proxy environment variable for the HTTP client.
+fn apply_proxy(proxy: &Option<String>) {
+    match proxy {
+        Some(p) if !p.is_empty() => std::env::set_var("HTTPS_PROXY", p),
+        _ => std::env::remove_var("HTTPS_PROXY"),
+    }
+}
+
 /// Returns the update endpoint URL for the given channel.
 fn endpoint_for_channel(channel: &str) -> String {
     let file = if channel == "beta" {
@@ -84,7 +92,10 @@ fn endpoint_for_channel(channel: &str) -> String {
 pub async fn check_for_update(
     app: AppHandle,
     channel: String,
+    proxy: Option<String>,
 ) -> Result<Option<UpdateMetadata>, AppError> {
+    apply_proxy(&proxy);
+
     let endpoint = Url::parse(&endpoint_for_channel(&channel))
         .map_err(|e| AppError::Updater(e.to_string()))?;
 
@@ -111,7 +122,12 @@ pub async fn check_for_update(
 /// The download can be cancelled by calling `cancel_update`.
 /// After installation, the frontend should call `relaunch()` to apply.
 #[tauri::command]
-pub async fn install_update(app: AppHandle, channel: String) -> Result<(), AppError> {
+pub async fn install_update(
+    app: AppHandle,
+    channel: String,
+    proxy: Option<String>,
+) -> Result<(), AppError> {
+    apply_proxy(&proxy);
     let cancel_state = app.state::<Arc<UpdateCancelState>>();
     cancel_state.reset();
 
