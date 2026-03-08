@@ -112,16 +112,37 @@ pnpm tauri build
 
 ```
 motrix-next/
-├── src/                    # Frontend (Vue 3 + TypeScript)
-│   ├── api/                # Aria2 RPC client
-│   ├── components/         # Vue components
-│   ├── shared/             # Constants, utilities, i18n locales
-│   ├── stores/             # Pinia state management
-│   └── views/              # Page-level views
-├── src-tauri/              # Backend (Rust + Tauri)
-│   ├── src/                # Tauri commands, engine management, tray/menu
-│   └── binaries/           # Aria2 sidecar binary
-└── package.json
+├── src/                        # Frontend (Vue 3 + TypeScript)
+│   ├── api/                    # Aria2 JSON-RPC client
+│   ├── components/             # Vue components
+│   │   ├── about/              #   About panel
+│   │   ├── layout/             #   Sidebar, speedometer, navigation
+│   │   ├── preference/         #   Settings pages, update dialog
+│   │   └── task/               #   Task list, detail, add task
+│   ├── composables/            # Reusable composition functions
+│   ├── router/                 # Vue Router configuration
+│   ├── shared/                 # Shared utilities & config
+│   │   ├── locales/            #   26 language packs
+│   │   ├── utils/              #   Pure utility functions (with tests)
+│   │   ├── aria2/              #   Aria2 RPC library
+│   │   ├── types.ts            #   TypeScript interfaces
+│   │   ├── constants.ts        #   App constants
+│   │   └── configKeys.ts       #   Persisted config key registry
+│   ├── stores/                 # Pinia state management (with tests)
+│   ├── styles/                 # Global CSS custom properties
+│   └── views/                  # Page-level route views
+├── src-tauri/                  # Backend (Rust + Tauri 2)
+│   ├── src/
+│   │   ├── commands/           #   app.rs, updater.rs
+│   │   ├── engine.rs           #   Aria2 sidecar lifecycle
+│   │   ├── error.rs            #   AppError enum
+│   │   ├── menu.rs             #   Native menu builder
+│   │   ├── tray.rs             #   System tray setup
+│   │   └── lib.rs              #   Tauri builder & plugin registration
+│   └── binaries/               # Aria2 sidecar binary
+├── scripts/                    # bump-version.sh
+├── .github/workflows/          # CI (ci.yml) + Release (release.yml)
+└── website/                    # Landing page (static HTML)
 ```
 
 ### Versioning & Release
