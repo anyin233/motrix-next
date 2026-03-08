@@ -8,7 +8,8 @@ import { usePreferenceStore } from './stores/preference'
 import { useTaskStore } from './stores/task'
 import { useAppStore } from './stores/app'
 import aria2Api, { initClient } from './api/aria2'
-import { ENGINE_RPC_PORT } from '@shared/constants'
+import { ENGINE_RPC_PORT, AUTO_SYNC_TRACKER_INTERVAL, DEFAULT_TRACKER_SOURCE } from '@shared/constants'
+import { convertTrackerDataToLine, convertTrackerDataToComma, reduceTrackerString } from '@shared/utils/tracker'
 import { logger } from '@shared/logger'
 import App from './App.vue'
 import 'virtual:uno.css'
@@ -75,6 +76,34 @@ async function autoCheckForUpdate() {
     }
   } catch (e) {
     logger.warn('Updater', 'auto check failed: ' + (e as Error).message)
+  }
+}
+
+async function autoSyncTrackerOnStartup() {
+  const config = preferenceStore.config
+  if (!config.autoSyncTracker) return
+
+  const lastSync = config.lastSyncTrackerTime || 0
+  if (Date.now() - lastSync < AUTO_SYNC_TRACKER_INTERVAL) return
+
+  const sources = config.trackerSource?.length ? config.trackerSource : DEFAULT_TRACKER_SOURCE
+  try {
+    const results = await preferenceStore.fetchBtTracker(sources)
+    const text = convertTrackerDataToLine(results)
+    if (!text) return
+
+    const comma = convertTrackerDataToComma(results)
+    await preferenceStore.updateAndSave({
+      btTracker: comma,
+      trackerSource: sources,
+      lastSyncTrackerTime: Date.now(),
+    })
+
+    const { invoke } = await import('@tauri-apps/api/core')
+    await invoke('save_system_config', { config: { 'bt-tracker': reduceTrackerString(comma) } })
+    logger.info('Tracker', `Auto-synced ${results.length} tracker source(s)`)
+  } catch (e) {
+    logger.debug('Tracker', 'auto-sync failed: ' + (e as Error).message)
   }
 }
 
@@ -153,6 +182,7 @@ preferenceStore.loadPreference().then(async () => {
   }
 
   autoCheckForUpdate()
+  autoSyncTrackerOnStartup()
 
   let lastClipboardText = ''
   getCurrentWindow().onFocusChanged(async ({ payload: focused }) => {

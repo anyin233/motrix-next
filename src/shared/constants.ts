@@ -87,6 +87,9 @@ export const XIU2_TRACKERS_HTTP_URL_CDN = 'https://cdn.jsdelivr.net/gh/XIU2/Trac
 // For bt-exclude-tracker
 export const XIU2_TRACKERS_BLACK_URL = 'https://cdn.jsdelivr.net/gh/XIU2/TrackersListCollection/blacklist.txt'
 
+/** Sensible default tracker sources for first install (CDN endpoints). */
+export const DEFAULT_TRACKER_SOURCE = [NGOSANG_TRACKERS_BEST_URL_CDN, NGOSANG_TRACKERS_BEST_IP_URL_CDN]
+
 export const TRACKER_SOURCE_OPTIONS = [
   {
     label: 'ngosang/trackerslist',

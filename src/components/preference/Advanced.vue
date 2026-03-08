@@ -8,13 +8,7 @@ import { usePreferenceForm } from '@/composables/usePreferenceForm'
 import { useTaskStore } from '@/stores/task'
 import { relaunch } from '@tauri-apps/plugin-process'
 import { appDataDir, resolveResource } from '@tauri-apps/api/path'
-import {
-  NGOSANG_TRACKERS_BEST_URL_CDN,
-  NGOSANG_TRACKERS_BEST_IP_URL_CDN,
-  ENGINE_RPC_PORT,
-  LOG_LEVELS,
-  PROXY_SCOPE_OPTIONS,
-} from '@shared/constants'
+import { ENGINE_RPC_PORT, LOG_LEVELS, PROXY_SCOPE_OPTIONS } from '@shared/constants'
 import { convertCommaToLine, convertLineToComma, generateRandomInt } from '@shared/utils'
 import { convertTrackerDataToLine } from '@shared/utils/tracker'
 import userAgentMap from '@shared/ua'
@@ -46,7 +40,7 @@ const taskStore = useTaskStore()
 const message = useAppMessage()
 const dialog = useDialog()
 
-const DEFAULT_TRACKER_SOURCE = [NGOSANG_TRACKERS_BEST_URL_CDN, NGOSANG_TRACKERS_BEST_IP_URL_CDN]
+import { DEFAULT_TRACKER_SOURCE } from '@shared/constants'
 
 const trackerSourceOptions = [
   {
